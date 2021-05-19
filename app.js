@@ -79,12 +79,70 @@ const jsonData = {
 // const jsonData = require('./dino.json');
 
 // 1. Create Animal Constructor
-function Animal (data) {
-    this.species = data.species,
-    this.weight = data.weight,
-    this.height = data.height,
-    this.diet = data.diet
-    this.facts = [data.fact]
+class Animal {
+    constructor (data) {
+        this.species = data.species,
+          this.weight = data.weight,
+          this.height = data.height,
+          this.diet = data.diet
+    }
+
+    getImage() {
+        return (
+          "./images/" + this.species.toLowerCase().split(" ").join(" ") + ".png"
+        );
+    }
+}
+
+class Human extends Animal{
+    constructor (data) {
+        super(data);
+        this.name = data.name;
+    }
+}
+
+class Dinosaur extends Animal{
+    constructor (data) {
+        super(data);
+        this.facts = [data.fact];
+    }
+
+    compareWeight (comparisonAnimal) {
+        if (this.weight >= comparisonAnimal.weight){
+            const difference = this.weight - comparisonAnimal.weight
+            this.facts.push(`The ${this.species} weighs ${difference} lbs more than ${comparisonAnimal.name}`)
+        }
+        else if (this.weight === comparisonAnimal.weight) {
+            this.facts.push(`The ${this.species} weighs ${this.height} lbs and is the same weight as ${comparisonAnimal.name}`)
+        }
+        else {
+            const difference = comparisonAnimal.weight - this.weight
+            this.facts.push(`The ${this.species} weighs ${difference} lbs less than ${comparisonAnimal.name}`)
+        }
+    }
+
+    compareHeight (comparisonAnimal) {
+        if (this.height > comparisonAnimal.height){
+            const difference = this.height - comparisonAnimal.height
+            this.facts.push(`The ${this.species} is ${difference} inches larger than ${comparisonAnimal.name}`)
+        }
+        else if (this.height === comparisonAnimal.height) {
+            this.facts.push(`The ${this.species} is ${this.height} inches tall and is the same height as ${comparisonAnimal.name}`)
+        }
+        else {
+            const difference = comparisonAnimal.height - this.height
+            this.facts.push(`The ${this.species} is ${difference} inches smaller than ${comparisonAnimal.name}`)
+        }
+    }
+
+    compareDiet (comparisonAnimal) {
+        if (this.diet != comparisonAnimal.diet){
+            this.facts.push(`The ${this.species} is an ${this.diet} where as ${comparisonAnimal.name} is a ${comparisonAnimal.diet}`)
+        } else {
+            this.facts.push(`Both Animals are ${this.diet}`)
+        }
+    }
+
 }
 
 // 2. Create Dino Objects
@@ -93,13 +151,14 @@ function Animal (data) {
 // and append it to the global animals array
 function createDinosaurAnimals (dinoData) {
     for (const i in dinoData) {
-        const Dino = new Animal(dinoData[i])
+        const Dino = new Dinosaur(dinoData[i])
         Dino.name = 'Dinosaur'
-        Dino.facts.push(`The ${dinoData[i].species} was located in ${dinoData[i].where}.`)
-        Dino.facts.push(`The ${dinoData[i].species} existed during ${dinoData[i].when} period.`)
+        // Dino.facts.push(`The ${dinoData[i].species} was located in ${dinoData[i].where}.`)
+        // Dino.facts.push(`The ${dinoData[i].species} existed during ${dinoData[i].when} period.`)
         dinosaurs.push(Dino)
     }
 }
+
 
 // 3. Create Human Object
 function buildHumanData () {
@@ -110,130 +169,63 @@ function buildHumanData () {
     const diet = document.querySelector('#diet').value
 
     let humanData = {}
-    humanData['name'] = `Human`
-    humanData['species'] = name
+    humanData['species'] = `Human`
     humanData['weight'] = weight
     humanData['height'] = feet * 12 + inches
     humanData['diet'] = diet
-    humanData['fact'] = [`This human is called ${name} by other humans.`]
-
+    humanData['name'] = name
     return humanData
 }
 
-function generateDOMTile (item) {
-
-
-    const humanFragment = document.createDocumentFragment()
-    const card = document.createElement('div')
-    card.classList.add('card')
-
-    switch (item.name) {
-        case 'Human':
-            // the Human tile must include the user’s name, and the human graphic--no fact is needed.
-            const namePara = document.createElement('p')
-            namePara.classList.add('card__data')
-            namePara.innerHTML = `${item.species}`
-            card.appendChild(namePara)
-        break;
-        case 'Pigeon':
-            // The bird tile should include the species, image, and fact, “All birds are dinosaurs.”
-            console.log('Oranges are $0.59 a pound.');
-        break;
-      // he dino fact displayed should be chosen at random from at least 6 options (including your 3 methods)
-
-        default:
-
-    }
-    // the Human tile must include the user’s name, and the human graphic--no fact is needed.
-
-
-    const namePara = document.createElement('p')
-    namePara.classList.add('card__data')
-    namePara.innerHTML = `${item.species}`
-    card.appendChild(namePara)
-
-    const feetPara = document.createElement('p')
-    feetPara.classList.add('card__data')
-    feetPara.innerHTML = `${item.height}''`
-    card.appendChild(feetPara)
-
-    const weightPara = document.createElement('p')
-    weightPara.classList.add('card__data')
-    weightPara.innerHTML = `${item.weight} lbs`
-    card.appendChild(weightPara)
-
-    const dietPara = document.createElement('p')
-    dietPara.classList.add('card__data')
-    dietPara.innerHTML = `${item.diet}`
-    card.appendChild(dietPara)
-
-    const wherePara = document.createElement('p')
-    wherePara.classList.add('card__data')
-    wherePara.innerHTML = `${item.fact}`
-    card.appendChild(wherePara)
-
-    const whenPara = document.createElement('p')
-    whenPara.classList.add('card__data')
-    whenPara.innerHTML = `${item.fact}`
-    card.appendChild(whenPara)
-
-    const factPara = document.createElement('p')
-    factPara.classList.add('card__data')
-    factPara.innerHTML = `${item.fact}`
-    card.appendChild(factPara)
-
-    const grid = document.querySelector('#grid')
-    humanFragment.appendChild(card)
-    grid.appendChild(humanFragment)
-
-}
-
-
-// Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, weight in lbs.
-Animal.prototype.compareWeight = function (comparisonAnimal) {
-    if (this.weight >= comparisonAnimal.weight){
-        const difference = this.weight - comparisonAnimal.weight
-        this.facts.push(`The ${this.species} weighs ${difference} lbs more than ${comparisonAnimal.species}`)
-    }
-    else if (this.weight === comparisonAnimal.weight) {
-        this.facts.push(`The ${this.species} weighs ${this.height} lbs and is the same weight as ${comparisonAnimal.species}`)
-    }
-    else {
-        const difference = comparisonAnimal.weight - this.weight
-        this.facts.push(`The ${this.species} weighs ${difference} lbs less than ${comparisonAnimal.species}`)
-    }
-}
-// Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
-Animal.prototype.compareHeight = function (comparisonAnimal) {
-    if (this.height > comparisonAnimal.height){
-        const difference = this.height - comparisonAnimal.height
-        this.facts.push(`The ${this.species} is ${difference} inches larger than ${comparisonAnimal.species}`)
-    }
-    else if (this.height === comparisonAnimal.height) {
-        this.facts.push(`The ${this.species} is ${this.height} inches tall and is the same height as ${comparisonAnimal.species}`)
-    }
-    else {
-        const difference = comparisonAnimal.height - this.height
-        this.facts.push(`The ${this.species} is ${difference} inches smaller than ${comparisonAnimal.species}`)
-    }
-}
-// Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
-Animal.prototype.compareDiet = function (comparisonAnimal) {
-    if (this.diet != comparisonAnimal.diet){
-        this.facts.push(`The ${this.species} is an ${this.diet} where as ${comparisonAnimal.species} is a ${comparisonAnimal.diet}`)
-    } else {
-        this.facts.push(`Both Animals are ${this.diet}`)
-    }
-}
-
-
-function buildNewDinosaurFacts (dinosaurs, comparisonAnimal) {
+function setDinosaurFacts (dinosaurs, comparisonAnimal) {
     dinosaurs.forEach(dinosaur => dinosaur.compareHeight(comparisonAnimal))
     dinosaurs.forEach(dinosaur => dinosaur.compareWeight(comparisonAnimal))
     dinosaurs.forEach(dinosaur => dinosaur.compareDiet(comparisonAnimal))
+    dinosaurs.forEach(dinosaur => shuffleArray(dinosaur.facts))
+}
+
+function generateDOMTiles (animals) {
+    const gridFragment = document.createDocumentFragment()
+
+    for (const animal of animals) {
+
+        const gridItem = document.createElement('div')
+        gridItem.classList.add('grid-item')
+
+        switch (animal.species) {
+            case 'Human':
+                const humanParagraph = document.createElement('p')
+                humanParagraph.classList.add('card__data')
+                humanParagraph.innerHTML = `${animal.species} name: ${animal.name}`
+                gridItem.appendChild(humanParagraph)
+                const humanImg = document.createElement('img')
+                humanImg.src = `${animal.getImage()}`
+                gridItem.appendChild(humanImg)
+                break;
+            case 'Pigeon':
+                const pigeonParagraph = document.createElement('p')
+                pigeonParagraph.classList.add('card__data')
+                pigeonParagraph.innerHTML = `${animal.species}: All birds are dinosaurs.`
+                const pigeonImg = document.createElement('img')
+                pigeonImg.src = `${animal.getImage()}`
+                gridItem.appendChild(pigeonParagraph)
+                gridItem.appendChild(pigeonImg)
+                break;
+            default:
+                let dinoParagraph = document.createElement('p')
+                dinoParagraph.classList.add('card__data')
+                dinoParagraph.innerHTML = `${animal.species}: ${animal.facts[0]}.`
+
+                let dinoImg = document.createElement('img')
+                dinoImg.src = `${animal.getImage()}`
+                gridItem.appendChild(dinoParagraph)
+                gridItem.appendChild(dinoImg)
+        }
+        gridFragment.appendChild(gridItem)
+    }
+    const grid = document.querySelector('#grid')
+    grid.appendChild(gridFragment)
+
 }
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -257,13 +249,13 @@ btn.addEventListener('click', (function () {
 
         // instantiate a new Animal named Human and pass in data to configure its properties.
         const humanData = buildHumanData()
-        const Human = new Animal(humanData)
+        const HumanObj = new Human(humanData)
 
         // Then for every dinosaur in our dinosaur list, we extend it's
         // Animal prototype by composing three new methods for it.
         // Each of these methods will compare the properties of a dinosaur
         // to that of a human in some way.
-        buildNewDinosaurFacts(dinosaurs, Human)
+        setDinosaurFacts(dinosaurs, HumanObj)
 
         // Shuffle the order of the dinosaurs in the array so the view is different each time user loads the page.
         shuffleArray(dinosaurs)
@@ -271,31 +263,19 @@ btn.addEventListener('click', (function () {
         // We then Create new array named Animals from our dinosaurs array. After this we
         //  add our human object to the center of this new animal array.  We are doing this
         //  as we are preparing to pass the items in our animal list into a 3x3 tiled grid in our view.
-        //  At index position 4 the human will be centered in the grid.
+        //  At index position 4 the human will be centered in our grid.
         const animals = [...dinosaurs]
         animals.splice( 4,   // At index 4,
           0,   // delete zero elements,
-          Human,  // and insert the object Human,
+          HumanObj,  // and insert the object Human,
         );
 
+        // Add tiles to DOM
+        generateDOMTiles(animals)
 
-        animals.forEach(animal => console.log(`${animal.species} facts: ${animal.facts}\n\n`))
+        // Remove form from screen
+        const form = document.querySelector('#dino-compare')
+        form.style.display = "none";
     };
 
 })());
-
-
-
-      //   };
-      //
-      // })());
-
-    // Generate Tiles for each Dino in Array
-
-        // Add tiles to DOM
-
-    // Remove form from screen
-
-
-// On button click, prepare and display infographic
-// export { Animal }
